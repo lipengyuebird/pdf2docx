@@ -5,41 +5,59 @@
 # @FileName : app.py
 # @Software : PyCharm
 
-import os
-import time
-
 from flask import Flask, request, send_from_directory
+
+from constant import OutputFormat, Status, OUTPUT_DIRECTORY
+from service import user_service, task_service
+
 app = Flask(__name__)
 
 
 @app.route('/')
 def hello_world():
-    return 'Hello World!'
+    return 'Hello Pdf2Docx!'
+
+
+@app.route('/allowed_output_format', methods=['GET'])
+def get_allowed_output_format():
+    return OutputFormat.list()
 
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if request.method == 'POST':
-        record_id = time.time().hex()[4:-4]
-        file = request.files['file']
-        file.save(f'cache/pdf/{record_id}.pdf')
-        return record_id
+        token = request.headers.get('Authorization')
+        user_id = user_service.decrypt_token(token) or user_service.generate_user_id()
+        return {'task_id': task_service.create_a_task(request.files, user_id, request.json)
+                }, 200, user_service.renewed_header(user_id)
 
 
-@app.route('/download', methods=['GET'])
-def download_file():
-    if request.method == 'GET':
-        filename = request.args.get('record_id') + '.docx'
-        if filename in os.listdir('cache/pdf'):
-            if filename in os.listdir('cache/docx'):
-                return {'message': 'The file is converting. Please try again later.'}
-            else:
-                return {'message': 'To be convert. Please try again later.'}
-        else:
-            if filename in os.listdir('cache/docx'):
-                return send_from_directory('cache/docx', filename, as_attachment=True)
-            else:
-                return {'message': 'File not found. Please check your record ID.'}
+@app.route('/history', methods=['GET'])
+def get_history():
+    token = request.headers.get('Authorization')
+    user_id = user_service.decrypt_token(token)
+    if not user_id:
+        return []
+    else:
+        return task_service.find_task_list_by_user_id(user_id), 200, \
+               user_service.renewed_header(user_id)
+
+
+@app.route('/download/<id>', methods=['GET'])
+def download_file(task_id):
+    token = request.headers.get('Authorization')
+    user_id = user_service.decrypt_token(token)
+    status = task_service.find_task_status_by_task_id(task_id, user_id)
+    if not status:
+        return {'message': 'Task not found. Please check your record ID.'}
+    elif Status.TO_BE_CONVERTED == status:
+        return {'message': 'To be convert. Please try again later.'}
+    elif Status.CONVERTING == status:
+        return {'message': 'The file is under conversion. Please try again later.'}
+    elif Status.COMPRESSING == status:
+        return {'message': 'The file is under compressing. Please try again later.'}
+    else:
+        return send_from_directory(OUTPUT_DIRECTORY, task_id + '.zip', as_attachment=True)
 
 
 if __name__ == '__main__':

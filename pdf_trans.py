@@ -4,22 +4,46 @@
 # @Author   : Perye(Li Pengyu)
 # @FileName : pdf_trans.py
 # @Software : PyCharm
-import os
-import time
+
+import threading
 
 from pdf2docx import Converter
 
+from constant import PDF_DIRECTORY, CONVERTED_DIRECTORY, OutputFormat, Status
+from service import task_service
 
-def trans(record_id):
+file_queue = []
+file_queue_lock = threading.Lock()
+
+
+def trans(filename, output_format):
+    if output_format not in OutputFormat.list():
+        raise TypeError
     # convert pdf to docx
-    cv = Converter(f'cache/pdf/{record_id}' + '.pdf')
-    cv.convert(f'cache/docx/{record_id}' + '.docx')
+    cv = Converter(f'{PDF_DIRECTORY}/{filename}')
+    cv.convert(f'{CONVERTED_DIRECTORY}/{filename.replace(".pdf", ".docx")}')
     cv.close()
-    os.remove(f'cache/pdf/{record_id}' + '.pdf')
+
+
+def push_task_queue():
+    while len(file_queue) <= 10:
+        file_queue_lock.acquire(blocking=True)
+        file_queue.extend(task_service.find_latest_unconverted_file_list(5))
+        file_queue_lock.release()
+
+
+threading.Thread(target=push_task_queue()).run()
 
 
 while True:
-    time.sleep(3)
-    file_queue = [filename for filename in sorted(os.listdir('cache/pdf')) if filename.endswith('.pdf')]
-    if file_queue:
-        trans(file_queue[0].replace('.pdf', ''))
+    file_queue_lock.acquire(blocking=True)
+    file = file_queue.pop()
+    file_queue_lock.release()
+    try:
+        trans(file.get('filename'), file.get('output_format'))
+        task_service.update_file_status_by_file_id(file.get('file_id'), Status.TO_BE_COMPRESSED)
+    except:
+        task_service.update_file_status_by_file_id(file.get('file_id'), Status.FAILED)
+
+
+
