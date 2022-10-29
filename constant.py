@@ -5,11 +5,14 @@
 # @FileName : constant.py
 # @Software : PyCharm
 
-from enum import Enum, IntEnum, StrEnum
+from enum import Enum, IntEnum
 
-PDF_DIRECTORY = 'cache/pdf'
-CONVERTED_DIRECTORY = 'cache/converted'
-OUTPUT_DIRECTORY = 'cache/output'
+BASE_DIR = 'C:\\Users\\lipen\\PycharmProjects\\pdf2docx\\'
+
+PDF_DIR = BASE_DIR + 'cache/pdf'
+CONVERTED_DIR = BASE_DIR + 'cache/converted'
+OUTPUT_DIR = BASE_DIR + 'cache/output'
+DB_DIR = BASE_DIR + 'pdf2docx'
 
 
 class ExtendedEnum(Enum):
@@ -28,7 +31,7 @@ class Status(IntEnum, ExtendedEnum):
     CONVERTED_WITH_FAILURE = 5
 
 
-class OutputFormat(StrEnum, ExtendedEnum):
+class OutputFormat(ExtendedEnum):
     DOCX = 'DOCX'
     JPG = 'JPG'
 

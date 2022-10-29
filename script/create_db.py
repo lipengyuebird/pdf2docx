@@ -7,8 +7,10 @@
 
 import sqlite3
 
+from constant import DB_DIR
+
 if __name__ == '__main__':
-    connection = sqlite3.connect('../pdf2docx')
+    connection = sqlite3.connect(f'{DB_DIR}')
     connection.execute("""
     CREATE TABLE file(
        id             INTEGER        PRIMARY KEY     AUTOINCREMENT     NOT NULL,
@@ -17,7 +19,9 @@ if __name__ == '__main__':
        user_id        CHAR(36)                                         NOT NULL,
        output_format  CHAR(5)                                          NOT NULL,
        time           DATETIME                                         NOT NULL,
-       status         INTEGER                                          NOT NULL
+       status         INTEGER                                          NOT NULL,
+       consumed_by_converter           BOOLEAN                         NOT NULL,
+       consumed_by_compressor          BOOLEAN                         NOT NULL 
     );""")
     connection.commit()
     connection.close()

@@ -4,38 +4,46 @@
 # @Author   : Perye(Li Pengyu)
 # @FileName : task_service.py
 # @Software : PyCharm
+import os
 import uuid
 from datetime import datetime
 import sqlite3
 
 from werkzeug.datastructures import ImmutableMultiDict, FileStorage
 
-from constant import PDF_DIRECTORY, Status
+from constant import PDF_DIR, DB_DIR, Status
 from db_support import dict_factory
-
-connection = sqlite3.connect('../pdf2docx')
-connection.row_factory = dict_factory
 
 
 def create_a_task(
-        file_dict,
+        file_dict: ImmutableMultiDict,
         user_id: str,
         output_format: str
 ):
     task_time = datetime.now()
     task_id = uuid.uuid1().hex
+    connection = sqlite3.connect(DB_DIR)
+    connection.row_factory = dict_factory
     cursor = connection.cursor()
-    for _k, file in file_dict:
-        file.save(f'{PDF_DIRECTORY}/{task_id}/{file.filename}')
+    os.mkdir(f'{PDF_DIR}/{task_id}')
+    for file in file_dict.getlist('file'):
+        file.save(f'{PDF_DIR}/{task_id}/{file.filename}')
     cursor.executemany(
-        """INSERT INTO file (task_id, name, user_id, output_format, time, status) VALUES (?, ?, ?, ?, ?, ?)""",
-        [(task_id, file.filename, user_id, output_format, task_time, Status.TO_BE_CONVERTED) for k, file in file_dict]
+        'INSERT INTO file (task_id, name, user_id, output_format, time, status, '
+        '                  consumed_by_converter, consumed_by_compressor) '
+        'VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [(task_id, file.filename, user_id, output_format, task_time, Status.TO_BE_CONVERTED,
+          False, False) for file in file_dict.getlist('file')]
     )
+    connection.commit()
     cursor.close()
+    connection.close()
     return task_id
 
 
 def find_task_list_by_user_id(user_id: str):
+    connection = sqlite3.connect(DB_DIR)
+    connection.row_factory = dict_factory
     cursor = connection.cursor()
     cursor.execute(
         'SELECT *, count(1) as file_amount, min(status), max(status) as task_status FROM file '
@@ -47,51 +55,81 @@ def find_task_list_by_user_id(user_id: str):
         for task in cursor.fetchall()
     ]
     cursor.close()
+    connection.close()
     return result
 
 
 def find_latest_unconverted_file_list(limit: int):
+    connection = sqlite3.connect(DB_DIR)
+    connection.row_factory = dict_factory
     cursor = connection.cursor()
     cursor.execute(
         'SELECT * FROM file '
-        'WHERE status = ? ORDER BY time DESC LIMIT ?',
+        'WHERE status = ? and consumed_by_converter = false ORDER BY time DESC LIMIT ?',
         (Status.TO_BE_CONVERTED, limit)
     )
     result = cursor.fetchall()
+    cursor.executemany(
+        'UPDATE file SET consumed_by_converter = true '
+        'WHERE id = ?',
+        [(file['id'], ) for file in result]
+    )
+    connection.commit()
     cursor.close()
+    connection.close()
     return result
 
 
 def update_file_status_by_file_id(file_id: int, status: int):
+    connection = sqlite3.connect(DB_DIR)
+    connection.row_factory = dict_factory
     cursor = connection.cursor()
     cursor.execute(
         'UPDATE file SET status = ?'
         'WHERE id = ?',
         (status, file_id)
     )
+    connection.commit()
     cursor.close()
+    connection.close()
 
 
 def find_latest_uncompressed_task_list(limit):
+    connection = sqlite3.connect(DB_DIR)
+    connection.row_factory = dict_factory
     cursor = connection.cursor()
     cursor.execute(
-        'SELECT *, max(status) as max_status, min(status) as min_status FROM file '
-        'WHERE status = ? ORDER BY time DESC LIMIT ?',
-        (Status.TO_BE_CONVERTED, limit)
+        'SELECT * FROM ('
+        '   SELECT *, min(status) as min_status '
+        '   FROM file '
+        '   WHERE status != ? and consumed_by_compressor = false GROUP BY task_id ORDER BY time DESC'
+        ') WHERE min_status = 2 LIMIT ?',
+        (Status.FAILED, limit)
     )
     result = cursor.fetchall()
+    cursor.executemany(
+        'UPDATE file SET consumed_by_compressor = true '
+        'WHERE task_id = ?',
+        [(file['task_id'],) for file in result]
+    )
+    connection.commit()
     cursor.close()
+    connection.close()
     return result
 
 
 def update_file_status_by_task_id(task_id: str, status: int):
+    connection = sqlite3.connect(DB_DIR)
+    connection.row_factory = dict_factory
     cursor = connection.cursor()
     cursor.execute(
         'UPDATE file SET status = ?'
         'WHERE task_id = ?',
         (status, task_id)
     )
+    connection.commit()
     cursor.close()
+    connection.close()
 
 
 def _format_filename(filename, file_num):
@@ -108,13 +146,13 @@ def _get_task_status(min_file_status: int, max_file_status: int):
         return Status.CONVERTED
     elif max_file_status == Status.FAILED:
         return Status.FAILED
-    elif min_file_status == Status.COMPRESSING:
-        return Status.COMPRESSING
     else:
-        return Status.CONVERTING
+        return max_file_status
 
 
 def find_task_status_by_task_id(task_id: str, user_id: str):
+    connection = sqlite3.connect(DB_DIR)
+    connection.row_factory = dict_factory
     cursor = connection.cursor()
     cursor.execute(
         'SELECT max(status) as task_status FROM file '
@@ -123,9 +161,9 @@ def find_task_status_by_task_id(task_id: str, user_id: str):
     )
     result = cursor.fetchone()
     cursor.close()
+    connection.close()
     return result['task_status'] if result else None
 
 
-
 if __name__ == '__main__':
-    print(find_task_list_by_user_id('111'))
+    print(find_latest_uncompressed_task_list(5))

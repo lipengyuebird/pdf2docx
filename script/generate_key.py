@@ -4,7 +4,11 @@
 # @Author   : Perye(Li Pengyu)
 # @FileName : generate_key.py
 # @Software : PyCharm
+
+import os
 import pip
+
+from constant import BASE_DIR
 
 if __name__ == '__main__':
     try:
@@ -16,8 +20,11 @@ if __name__ == '__main__':
 
     (public_key, private_key) = rsa.newkeys(1024)
 
-    with open('public.pem', 'wb+') as f:
+    if not os.path.exists(f'{BASE_DIR}/rsa'):
+        os.mkdir(f'{BASE_DIR}/rsa')
+
+    with open(f'{BASE_DIR}/rsa/public.pem', 'wb+') as f:
         f.write(public_key.save_pkcs1())
 
-    with open('private.pem', 'wb+') as f:
+    with open(f'{BASE_DIR}/rsa/private.pem', 'wb+') as f:
         f.write(private_key.save_pkcs1())

@@ -7,7 +7,7 @@
 
 from flask import Flask, request, send_from_directory
 
-from constant import OutputFormat, Status, OUTPUT_DIRECTORY
+from constant import OutputFormat, Status, OUTPUT_DIR
 from service import user_service, task_service
 
 app = Flask(__name__)
@@ -26,9 +26,9 @@ def get_allowed_output_format():
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if request.method == 'POST':
-        token = request.headers.get('Authorization')
+        token = request.headers.get('Authorization', None)
         user_id = user_service.decrypt_token(token) or user_service.generate_user_id()
-        return {'task_id': task_service.create_a_task(request.files, user_id, request.json)
+        return {'task_id': task_service.create_a_task(request.files, user_id, request.args.get('output_format'))
                 }, 200, user_service.renewed_header(user_id)
 
 
@@ -57,8 +57,8 @@ def download_file(task_id):
     elif Status.COMPRESSING == status:
         return {'message': 'The file is under compressing. Please try again later.'}
     else:
-        return send_from_directory(OUTPUT_DIRECTORY, task_id + '.zip', as_attachment=True)
+        return send_from_directory(OUTPUT_DIR, task_id + '.zip', as_attachment=True)
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

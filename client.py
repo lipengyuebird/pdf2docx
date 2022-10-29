@@ -8,8 +8,12 @@ import os
 
 import requests
 
-# files = {}
+f_list = []
+files = {}
+
 for filename in os.listdir('samples'):
-    with open('samples/' + filename, 'rb') as f:
-        files = {'file': (filename, f, "multipart/form-data")}
-        print(requests.post('http://127.0.0.1:5001/upload', files=files).text)
+    f = open('samples/' + filename, 'rb')
+    f_list.append(('file', (filename, f, "multipart/form-data")))
+
+
+requests.post('http://127.0.0.1:5000/upload', files=f_list, params={'output_format': 'docx'})

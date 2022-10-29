@@ -8,13 +8,13 @@ import time
 import uuid
 from typing import Optional
 
-from authlib.jose import jwt, JWTClaims
+from authlib.jose import jwt
 from authlib.jose.errors import *
 
 header = {'alg': 'RS256', "typ": "JWT"}
-with open('private_key.pem') as f:
+with open('rsa/private.pem') as f:
     private_key = f.read()
-with open('public_key.pem') as f:
+with open('rsa/public.pem') as f:
     public_key = f.read()
 
 
@@ -36,7 +36,7 @@ def encrypt_token(user_id: str) -> str:
         'sub': user_id,
         'exp': int(time.time()) + 1000 * 60 * 60 * 24 * 7,
         'iat': int(time.time())
-    }, private_key)
+    }, private_key).decode('utf-8')
 
 
 def decrypt_token(token: str) -> Optional[str]:
@@ -48,7 +48,7 @@ def decrypt_token(token: str) -> Optional[str]:
     if not token:
         return None
     try:
-        claims = jwt.decode(token.split('Bearer ')[0], public_key)
+        claims = jwt.decode(token.split('Bearer ')[1], public_key)
         claims.validate()
         return claims.get('sub')
     except BadSignatureError:
@@ -58,4 +58,4 @@ def decrypt_token(token: str) -> Optional[str]:
 
 
 def renewed_header(user_id: str):
-    return [('Authorization', 'Bearer ' + encrypt_token(user_id))]
+    return [('Authorization', encrypt_token(user_id))]
