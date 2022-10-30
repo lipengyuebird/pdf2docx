@@ -63,7 +63,7 @@ def download_file(task_id):
     token = request.args.get('token')
     user_id = user_service.decrypt_token(token)
     status = task_service.find_task_status_by_task_id(task_id, user_id)
-    if not status:
+    if status is None:
         return {'message': 'Task not found. Please check your record ID.'}
     elif Status.TO_BE_CONVERTED == status:
         return {'message': 'To be convert. Please try again later.'}
