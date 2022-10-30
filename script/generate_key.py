@@ -20,11 +20,11 @@ if __name__ == '__main__':
 
     (public_key, private_key) = rsa.newkeys(1024)
 
-    if not os.path.exists(f'{BASE_DIR}/rsa'):
-        os.mkdir(f'{BASE_DIR}/rsa')
+    if not os.path.exists(f'{BASE_DIR}rsa'):
+        os.mkdir(f'{BASE_DIR}rsa')
 
-    with open(f'{BASE_DIR}/rsa/public.pem', 'wb+') as f:
+    with open(f'{BASE_DIR}rsa/public.pem', 'wb+') as f:
         f.write(public_key.save_pkcs1())
 
-    with open(f'{BASE_DIR}/rsa/private.pem', 'wb+') as f:
+    with open(f'{BASE_DIR}rsa/private.pem', 'wb+') as f:
         f.write(private_key.save_pkcs1())

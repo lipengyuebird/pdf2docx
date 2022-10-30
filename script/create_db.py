@@ -10,7 +10,7 @@ import sqlite3
 from constant import DB_DIR
 
 if __name__ == '__main__':
-    connection = sqlite3.connect(f'{DB_DIR}')
+    connection = sqlite3.connect(DB_DIR)
     connection.execute("""
     CREATE TABLE file(
        id             INTEGER        PRIMARY KEY     AUTOINCREMENT     NOT NULL,

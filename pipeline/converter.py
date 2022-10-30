@@ -9,7 +9,8 @@ import threading
 import time
 import traceback
 
-from pdf2docx import Converter
+import aspose.words as aw
+from pdf2image import convert_from_path
 
 from constant import PDF_DIR, CONVERTED_DIR, OutputFormat, Status
 from service import task_service
@@ -23,10 +24,11 @@ def trans(task_id: str, filename: str, output_format: str):
         raise TypeError
     if not os.path.exists(f'{CONVERTED_DIR}/{task_id}'):
         os.mkdir(f'{CONVERTED_DIR}/{task_id}')
-    # convert pdf to docx
-    cv = Converter(f'{PDF_DIR}/{task_id}/{filename}')
-    cv.convert(f'{CONVERTED_DIR}/{task_id}/{filename.replace(".pdf", ".docx")}')
-    cv.close()
+    if output_format.upper() == OutputFormat.JPG:
+        convert_from_path(f'{PDF_DIR}/{task_id}/{filename}', output_folder=f'{CONVERTED_DIR}/{task_id}/{filename.replace(".pdf", "")}')
+    else:
+        doc = aw.Document(f'{PDF_DIR}/{task_id}/{filename}')
+        doc.save(f'{CONVERTED_DIR}/{task_id}/{filename.replace(".pdf", "." + output_format.lower())}')
 
 
 def maintain_file_queue():

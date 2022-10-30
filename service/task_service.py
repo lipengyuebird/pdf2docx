@@ -26,14 +26,16 @@ def create_a_task(
     connection.row_factory = dict_factory
     cursor = connection.cursor()
     os.mkdir(f'{PDF_DIR}/{task_id}')
-    for file in file_dict.getlist('file'):
+    file_list = [file for key in file_dict.keys() for file in file_dict.getlist(key)]
+    print(file_list)
+    for file in file_list:
         file.save(f'{PDF_DIR}/{task_id}/{file.filename}')
     cursor.executemany(
         'INSERT INTO file (task_id, name, user_id, output_format, time, status, '
         '                  consumed_by_converter, consumed_by_compressor) '
         'VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
         [(task_id, file.filename, user_id, output_format, task_time, Status.TO_BE_CONVERTED,
-          False, False) for file in file_dict.getlist('file')]
+          False, False) for file in file_list]
     )
     connection.commit()
     cursor.close()

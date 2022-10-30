@@ -33,7 +33,10 @@ class Status(IntEnum, ExtendedEnum):
 
 class OutputFormat(ExtendedEnum):
     DOCX = 'DOCX'
+    DOC = 'DOC'
+    RTF = 'RTF'
     JPG = 'JPG'
+    ODT = 'ODT'
 
 
 if __name__ == '__main__':

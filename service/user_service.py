@@ -51,6 +51,8 @@ def decrypt_token(token: str) -> Optional[str]:
         claims = jwt.decode(token.split('Bearer ')[1], public_key)
         claims.validate()
         return claims.get('sub')
+    except IndexError:
+        return None
     except BadSignatureError:
         return None
     except InvalidClaimError:
