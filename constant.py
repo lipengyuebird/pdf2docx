@@ -14,6 +14,14 @@ CONVERTED_DIR = BASE_DIR + 'cache/converted'
 OUTPUT_DIR = BASE_DIR + 'cache/output'
 DB_HOST = 'localhost'
 
+ip_dict = {
+        'test1': 'localhost:5001',
+        'test2': 'localhost:5002',
+        'test3': 'localhost:5003',
+        'test4': 'localhost:5004',
+        'test5': 'localhost:5005',
+}
+
 
 class ExtendedEnum(Enum):
     @classmethod

@@ -8,9 +8,10 @@ import socket
 import uuid
 import argparse
 
+import uhashring
 from flask import Flask, request, send_from_directory, make_response, redirect
 
-from constant import OutputFormat, Status, OUTPUT_DIR
+from constant import OutputFormat, Status, OUTPUT_DIR, ip_dict
 from service import user_service, task_service
 from hash_ring import DistributedHashRing
 from node_management import add_node
@@ -51,8 +52,8 @@ def upload_file():
     if request.method == 'POST':
         try:
             task_id = str(uuid.UUID(request.args.get('task_id')))
-            if hash_ring.get_node(task_id) != local_address:
-                return redirect(hash_ring.get_node(task_id)), 302
+            if hash_ring.get_node(task_id) != socket.gethostname():
+                return redirect(ip_dict.get(hash_ring.get_node(task_id))), 302
         except ValueError:
             return {'message': 'Invalid task ID.'}, 400
         token = request.headers.get('Authorization', None)
@@ -102,23 +103,14 @@ def download_file(task_id):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        prog='pdf2docx',
-        description='Convert PDF files to other formats.')
-    parser.add_argument('--partner')
-    parser.add_argument('-p', '--port', default=5000)
-    parser.add_argument('--hash-port', default=5001)
-    args = parser.parse_args()
 
-    local_address = socket.gethostbyname(socket.gethostname()) + ':' + str(args.hash_port)
-    hash_ring = DistributedHashRing(local_address, [
-        '172.18.0.2:5001',
-        '172.18.0.3:5001',
-        '172.18.0.4:5001',
-        '172.18.0.5:5001',
-        '172.18.0.6:5001',
+    local_address = socket.gethostbyname(socket.gethostname()) + ':5001'
+    hash_ring = uhashring.HashRing([
+        'test1',
+        'test2',
+        'test3',
+        'test4',
+        'test5',
     ])
 
-    if args.partner:
-        add_node(hash_ring, local_address, args.partner)
-    app.run(host='0.0.0.0', port=args.port)
+    app.run(host='0.0.0.0', port=5000)
