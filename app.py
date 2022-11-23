@@ -56,32 +56,36 @@ def upload_file():
         except ValueError:
             return {'message': 'Invalid task ID.'}, 400
         token = request.headers.get('Authorization', None)
-        user_id = user_service.decrypt_token(token) or user_service.generate_user_id()
-        return {'task_id': task_service.create_a_task(task_id, request.files, user_id, request.args.get('output_format'))
-                }, 200, user_service.renewed_header(user_id)
+        # user_id = user_service.decrypt_token(token) or user_service.generate_user_id()
+        # return {'task_id': task_service.create_a_task(task_id, request.files, user_id, request.args.get('output_format'))
+        #         }, 200, user_service.renewed_header(user_id)
+        return {'task_id': task_service.create_a_task(task_id, request.files, '1',
+                                                      request.args.get('output_format'))
+                }, 200
 
 
 @app.route('/history', methods=['GET'])
 def get_history():
     token = request.headers.get('Authorization')
-    user_id = user_service.decrypt_token(token)
+    # user_id = user_service.decrypt_token(token)
+    user_id = '1'
     if not user_id:
         return []
     else:
-        return task_service.find_task_list_by_user_id(user_id), 200, \
-               user_service.renewed_header(user_id)
+        # return task_service.find_task_list_by_user_id(user_id), 200, \
+        #        user_service.renewed_header(user_id)
+        return task_service.find_task_list_by_user_id(user_id), 200
 
 
 @app.route('/download/<task_id>', methods=['GET'])
 def download_file(task_id):
     try:
         task_id = str(uuid.UUID(task_id))
-        if hash_ring.get_node(task_id) != local_address:
-            return redirect(hash_ring.get_node(task_id)), 302
     except ValueError:
         return {'message': 'Invalid task ID.'}, 400
     token = request.args.get('token')
-    user_id = user_service.decrypt_token(token)
+    user_id = '1'
+    # user_id = user_service.decrypt_token(token)
     status = task_service.find_task_status_by_task_id(task_id, user_id)
     if status is None:
         return {'message': 'Task not found. Please check your task ID.'}
@@ -92,6 +96,8 @@ def download_file(task_id):
     elif Status.COMPRESSING == status:
         return {'message': 'The file is under compressing. Please try again later.'}
     else:
+        if task_service.find_task_node_by_task_id(task_id) != local_address:
+            return redirect(hash_ring.get_node(task_id)), 302
         return send_from_directory(OUTPUT_DIR, task_id + '.zip', as_attachment=True)
 
 

@@ -170,5 +170,20 @@ def find_task_status_by_task_id(task_id: str, user_id: str):
     return result['task_status'] if result else None
 
 
+def find_task_node_by_task_id(task_id: str):
+    connection = dbapi2.connect(DB_HOST)
+    connection.row_factory = dict_factory
+    cursor = connection.cursor()
+    cursor.execute(
+        'SELECT node FROM file '
+        'WHERE task_id = ?',
+        (task_id,)
+    )
+    result = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    return result['node'] if result else None
+
+
 if __name__ == '__main__':
     print(find_latest_uncompressed_task_list(5))
