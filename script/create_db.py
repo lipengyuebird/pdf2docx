@@ -4,10 +4,12 @@
 # @Author   : Perye(Li Pengyu)
 # @FileName : create_db.py
 # @Software : PyCharm
+import sys
 
 import pyrqlite.dbapi2 as dbapi2
 
 from constant import DB_HOST
+sys.path.append('/usr/local/pdf2docx')
 
 if __name__ == '__main__':
     connection = dbapi2.connect(DB_HOST)

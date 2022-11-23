@@ -5,6 +5,7 @@
 # @FileName : app.py
 # @Software : PyCharm
 import socket
+import sys
 import uuid
 import argparse
 
@@ -15,6 +16,7 @@ from constant import OutputFormat, Status, OUTPUT_DIR, ip_dict
 from service import user_service, task_service
 from hash_ring import DistributedHashRing
 from node_management import add_node
+sys.path.append('/usr/local/pdf2docx')
 
 app = Flask(__name__)
 
