@@ -5,24 +5,23 @@
 # @FileName : task_service.py
 # @Software : PyCharm
 import os
-import uuid
 from datetime import datetime
-import sqlite3
+import pyrqlite.dbapi2 as dbapi2
 
 from werkzeug.datastructures import ImmutableMultiDict, FileStorage
 
-from constant import PDF_DIR, DB_DIR, Status
+from constant import PDF_DIR, DB_HOST, Status
 from db_support import dict_factory
 
 
 def create_a_task(
+        task_id: str,
         file_dict: ImmutableMultiDict,
         user_id: str,
         output_format: str
-):
+) -> str:
     task_time = datetime.now()
-    task_id = uuid.uuid1().hex
-    connection = sqlite3.connect(DB_DIR)
+    connection = dbapi2.connect(DB_HOST)
     connection.row_factory = dict_factory
     cursor = connection.cursor()
     os.mkdir(f'{PDF_DIR}/{task_id}')
@@ -32,7 +31,7 @@ def create_a_task(
         file.save(f'{PDF_DIR}/{task_id}/{file.filename}')
     cursor.executemany(
         'INSERT INTO file (task_id, name, user_id, output_format, time, status, '
-        '                  consumed_by_converter, consumed_by_compressor) '
+        '                  consumed_by_converter, consumed_by_compressor, ) '
         'VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
         [(task_id, file.filename, user_id, output_format, task_time, Status.TO_BE_CONVERTED,
           False, False) for file in file_list]
@@ -44,12 +43,12 @@ def create_a_task(
 
 
 def find_task_list_by_user_id(user_id: str):
-    connection = sqlite3.connect(DB_DIR)
+    connection = dbapi2.connect(DB_HOST)
     connection.row_factory = dict_factory
     cursor = connection.cursor()
     cursor.execute(
         'SELECT *, count(1) as file_amount, min(status), max(status) as task_status FROM file '
-        'WHERE user_id = ? GROUP BY task_id ORDER BY time DESC',
+        'WHERE user_id = ? GROUP BY task_id ORDER BY time DESC, name DESC',
         (user_id,)
     )
     result = [
@@ -62,7 +61,7 @@ def find_task_list_by_user_id(user_id: str):
 
 
 def find_latest_unconverted_file_list(limit: int):
-    connection = sqlite3.connect(DB_DIR)
+    connection = dbapi2.connect(DB_HOST)
     connection.row_factory = dict_factory
     cursor = connection.cursor()
     cursor.execute(
@@ -83,7 +82,7 @@ def find_latest_unconverted_file_list(limit: int):
 
 
 def update_file_status_by_file_id(file_id: int, status: int):
-    connection = sqlite3.connect(DB_DIR)
+    connection = dbapi2.connect(DB_HOST)
     connection.row_factory = dict_factory
     cursor = connection.cursor()
     cursor.execute(
@@ -97,7 +96,7 @@ def update_file_status_by_file_id(file_id: int, status: int):
 
 
 def find_latest_uncompressed_task_list(limit):
-    connection = sqlite3.connect(DB_DIR)
+    connection = dbapi2.connect(DB_HOST)
     connection.row_factory = dict_factory
     cursor = connection.cursor()
     cursor.execute(
@@ -121,7 +120,7 @@ def find_latest_uncompressed_task_list(limit):
 
 
 def update_file_status_by_task_id(task_id: str, status: int):
-    connection = sqlite3.connect(DB_DIR)
+    connection = dbapi2.connect(DB_HOST)
     connection.row_factory = dict_factory
     cursor = connection.cursor()
     cursor.execute(
@@ -138,9 +137,13 @@ def _format_filename(filename, file_num):
     if file_num == 1:
         return filename if len(filename) <= 50 else filename[:47] + '...'
     elif file_num == 2:
-        return filename if len(filename) <= 39 else f'{filename[:36]}... and 1 file'
+        if len(filename) > 39:
+            filename = filename[:36]
+        return f'{filename}... and 1 file'
     else:
-        return filename if len(filename) <= 38 else f'{filename[:35]}... and {file_num - 1} files'
+        if len(filename) > 38:
+            filename = filename[:35]
+        return f'{filename}... and {file_num - 1} files'
 
 
 def _get_task_status(min_file_status: int, max_file_status: int):
@@ -153,7 +156,7 @@ def _get_task_status(min_file_status: int, max_file_status: int):
 
 
 def find_task_status_by_task_id(task_id: str, user_id: str):
-    connection = sqlite3.connect(DB_DIR)
+    connection = dbapi2.connect(DB_HOST)
     connection.row_factory = dict_factory
     cursor = connection.cursor()
     cursor.execute(

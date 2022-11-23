@@ -4,3 +4,7 @@ pdf2image
 pdf2odt
 aspose-words
 authlib
+uhashring
+pysyncobj
+pysftp
+pyrqlite

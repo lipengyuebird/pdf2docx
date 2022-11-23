@@ -5,12 +5,12 @@
 # @FileName : create_db.py
 # @Software : PyCharm
 
-import sqlite3
+import pyrqlite.dbapi2 as dbapi2
 
-from constant import DB_DIR
+from constant import DB_HOST
 
 if __name__ == '__main__':
-    connection = sqlite3.connect(DB_DIR)
+    connection = dbapi2.connect(DB_HOST)
     connection.execute("""
     CREATE TABLE file(
        id             INTEGER        PRIMARY KEY     AUTOINCREMENT     NOT NULL,
@@ -21,7 +21,8 @@ if __name__ == '__main__':
        time           DATETIME                                         NOT NULL,
        status         INTEGER                                          NOT NULL,
        consumed_by_converter           BOOLEAN                         NOT NULL,
-       consumed_by_compressor          BOOLEAN                         NOT NULL 
+       consumed_by_compressor          BOOLEAN                         NOT NULL,
+       node           CHAR(21)                                         NOT NULL
     );""")
     connection.commit()
     connection.close()

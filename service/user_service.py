@@ -11,10 +11,12 @@ from typing import Optional
 from authlib.jose import jwt
 from authlib.jose.errors import *
 
+from constant import BASE_DIR
+
 header = {'alg': 'RS256', "typ": "JWT"}
-with open('rsa/private.pem') as f:
+with open(BASE_DIR + 'rsa/private.pem') as f:
     private_key = f.read()
-with open('rsa/public.pem') as f:
+with open(BASE_DIR + 'rsa/public.pem') as f:
     public_key = f.read()
 
 

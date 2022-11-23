@@ -12,7 +12,7 @@ BASE_DIR = 'C:\\Users\\lipen\\PycharmProjects\\pdf2docx\\'
 PDF_DIR = BASE_DIR + 'cache/pdf'
 CONVERTED_DIR = BASE_DIR + 'cache/converted'
 OUTPUT_DIR = BASE_DIR + 'cache/output'
-DB_DIR = BASE_DIR + 'pdf2docx'
+DB_HOST = 'localhost'
 
 
 class ExtendedEnum(Enum):
