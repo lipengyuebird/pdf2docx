@@ -104,8 +104,14 @@ if __name__ == '__main__':
     parser.add_argument('--hash-port', default=5001)
     args = parser.parse_args()
 
-    local_address = socket.gethostbyname(f'{socket.gethostname()}:{args.hash_port}')
-    hash_ring = DistributedHashRing(local_address, [])
+    local_address = socket.gethostbyname(socket.gethostname()) + ':' + str(args.hash_port)
+    hash_ring = DistributedHashRing(local_address, [
+        '172.18.0.2:5001',
+        '172.18.0.3:5001',
+        '172.18.0.4:5001',
+        '172.18.0.5:5001',
+        '172.18.0.6:5001',
+    ])
 
     if args.partner:
         add_node(hash_ring, local_address, args.partner)
