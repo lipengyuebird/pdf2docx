@@ -12,7 +12,7 @@ from constant import DB_HOST
 sys.path.append('/usr/local/pdf2docx')
 
 if __name__ == '__main__':
-    connection = dbapi2.connect(DB_HOST)
+    connection = dbapi2.connect()
     connection.execute("""
     CREATE TABLE file(
        id             INTEGER        PRIMARY KEY     AUTOINCREMENT     NOT NULL,
