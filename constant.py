@@ -7,12 +7,12 @@
 
 from enum import Enum, IntEnum
 
-BASE_DIR = 'C:\\Users\\lipen\\PycharmProjects\\pdf2docx\\'
+BASE_DIR = '/usr/local/pdf2docx/'
 
 PDF_DIR = BASE_DIR + 'cache/pdf'
 CONVERTED_DIR = BASE_DIR + 'cache/converted'
 OUTPUT_DIR = BASE_DIR + 'cache/output'
-DB_HOST = 'localhost'
+DB_HOST = 'test1'
 
 ip_dict = {
         'test1': 'localhost:5001',
