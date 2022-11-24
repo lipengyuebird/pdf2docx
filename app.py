@@ -10,15 +10,11 @@ sys.path.append('/usr/local/pdf2docx')
 import socket
 
 import uuid
-import argparse
-
 import uhashring
 from flask import Flask, request, send_from_directory, make_response, redirect
 
 from constant import OutputFormat, Status, OUTPUT_DIR, ip_dict
-from service import user_service, task_service
-from hash_ring import DistributedHashRing
-from node_management import add_node
+from service import task_service
 
 app = Flask(__name__)
 
