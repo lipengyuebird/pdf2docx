@@ -35,7 +35,10 @@ def trans(task_id: str, filename: str, output_format: str):
 
 
 def maintain_file_queue():
-    while len(file_queue) <= 10:
+    while True:
+        if len(file_queue) >= 10:
+            time.sleep(5)
+            continue
         print(file_queue)
         try:
             file_queue_lock.acquire(blocking=True)

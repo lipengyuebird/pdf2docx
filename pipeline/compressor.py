@@ -24,7 +24,10 @@ def compress(task_id):
 
 
 def maintain_task_queue():
-    while len(task_queue) <= 10:
+    while True:
+        if len(task_queue) >= 10:
+            time.sleep(5)
+            continue
         try:
             task_queue_lock.acquire(blocking=True)
             task_queue.extend(task_service.find_latest_uncompressed_task_list(5))

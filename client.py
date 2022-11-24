@@ -23,11 +23,11 @@ for i in range(11):
                               params={'output_format': 'docx', 'task_id': task_id})
             break
         except:
-            time.sleep(20)
+            time.sleep(90)
             pass
     print(f_list)
     f_list = []
-    time.sleep(20)
+    time.sleep(90)
 
 
 task_id = requests.get('http://127.0.0.1:5001/task_id').text
