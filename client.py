@@ -5,19 +5,29 @@
 # @FileName : client.py
 # @Software : PyCharm
 import os
+import time
 
 import requests
 
 f_list = []
 
-for i in range(10):
-    for filename in os.listdir('C:\\Users\\lipen\\Downloads\\master-gdc-gdcdatasets-2020445568-2020445568\\lcwa_gov_pdf_data\\data')[100*i: min(100*i+1, 1002)]:
+for i in range(11):
+    for filename in os.listdir('C:\\Users\\lipen\\Downloads\\master-gdc-gdcdatasets-2020445568-2020445568\\lcwa_gov_pdf_data\\data')[100*i: min(100*(i+1), 1002)]:
         f = open('C:\\Users\\lipen\\Downloads\\master-gdc-gdcdatasets-2020445568-2020445568\\lcwa_gov_pdf_data\\data\\' + filename, 'rb')
         f_list.append(('file', (filename, f, "multipart/form-data")))
-    task_id = requests.get('http://127.0.0.1:5001/task_id').text
-    r = requests.post('http://127.0.0.1:5001/upload', files=f_list,
-                      params={'output_format': 'docx', 'task_id': task_id})
+
+    while 1:
+        try:
+            task_id = requests.get('http://127.0.0.1:5001/task_id').text
+            r = requests.post('http://127.0.0.1:5001/upload', files=f_list,
+                              params={'output_format': 'docx', 'task_id': task_id})
+            break
+        except:
+            time.sleep(20)
+            pass
+    print(f_list)
     f_list = []
+
 
 task_id = requests.get('http://127.0.0.1:5001/task_id').text
 r = requests.post('http://127.0.0.1:5001/upload', files=f_list, params={'output_format': 'docx', 'task_id': task_id})

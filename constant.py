@@ -23,11 +23,11 @@ DB_HOST = 'test1'
 # }
 
 ip_dict = {
-        'bbb117e19ce8': 'localhost:5001',
-        'ee9a831c03a2': 'localhost:5002',
-        '3c26663a4fa3': 'localhost:5003',
-        '851657df746f': 'localhost:5004',
-        '5c6a81750f67': 'localhost:5005',
+        '8522339a99b3': 'localhost:5001',
+        'c40707d8955f': 'localhost:5002',
+        '31702ad537d0': 'localhost:5003',
+        '5f31c901be2e': 'localhost:5004',
+        '465ae1fc86a2': 'localhost:5005',
 }
 
 
