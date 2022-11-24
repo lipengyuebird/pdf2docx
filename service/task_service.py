@@ -4,6 +4,7 @@
 # @Author   : Perye(Li Pengyu)
 # @FileName : task_service.py
 # @Software : PyCharm
+import socket
 import sys
 sys.path.append("/usr/local/pdf2docx")
 
@@ -13,7 +14,7 @@ import pyrqlite.dbapi2 as dbapi2
 
 from werkzeug.datastructures import ImmutableMultiDict, FileStorage
 
-from constant import PDF_DIR, DB_HOST, Status
+from constant import PDF_DIR, DB_HOST, Status, ip_dict
 from db_support import dict_factory
 
 connection = dbapi2.connect(host=DB_HOST)
@@ -38,7 +39,7 @@ def create_a_task(
             '                  consumed_by_converter, consumed_by_compressor, node) '
             'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
             [(task_id, file.filename, user_id, output_format, task_time, int(Status.TO_BE_CONVERTED),
-              False, False) for file in file_list]
+              False, False, ip_dict[socket.gethostname()]) for file in file_list]
         )
     return task_id
 

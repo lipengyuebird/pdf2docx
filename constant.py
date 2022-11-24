@@ -14,12 +14,20 @@ CONVERTED_DIR = BASE_DIR + 'cache/converted'
 OUTPUT_DIR = BASE_DIR + 'cache/output'
 DB_HOST = 'test1'
 
+# ip_dict_pub = {
+#         'test1': 'localhost:5001',
+#         'test2': 'localhost:5002',
+#         'test3': 'localhost:5003',
+#         'test4': 'localhost:5004',
+#         'test5': 'localhost:5005',
+# }
+
 ip_dict = {
-        'test1': 'localhost:5001',
-        'test2': 'localhost:5002',
-        'test3': 'localhost:5003',
-        'test4': 'localhost:5004',
-        'test5': 'localhost:5005',
+        'bbb117e19ce8': 'localhost:5001',
+        'ee9a831c03a2': 'localhost:5002',
+        '3c26663a4fa3': 'localhost:5003',
+        '851657df746f': 'localhost:5004',
+        '5c6a81750f67': 'localhost:5005',
 }
 
 

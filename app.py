@@ -109,11 +109,11 @@ if __name__ == '__main__':
 
     local_address = socket.gethostbyname(socket.gethostname()) + ':5001'
     hash_ring = uhashring.HashRing([
-        'test1',
-        'test2',
-        'test3',
-        'test4',
-        'test5',
+        'bbb117e19ce8',
+        'ee9a831c03a2',
+        '3c26663a4fa3',
+        '851657df746f',
+        '5c6a81750f67'
     ])
 
     app.run(host='0.0.0.0', port=5000)
