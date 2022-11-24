@@ -16,8 +16,7 @@ from werkzeug.datastructures import ImmutableMultiDict, FileStorage
 from constant import PDF_DIR, DB_HOST, Status
 from db_support import dict_factory
 
-connection = dbapi2.connect(DB_HOST)
-connection.row_factory = dict_factory
+connection = dbapi2.connect(host=DB_HOST)
 
 
 def create_a_task(
@@ -40,8 +39,6 @@ def create_a_task(
         [(task_id, file.filename, user_id, output_format, task_time, Status.TO_BE_CONVERTED,
           False, False) for file in file_list]
     )
-    connection.commit()
-    cursor.close()
     return task_id
 
 
@@ -56,7 +53,6 @@ def find_task_list_by_user_id(user_id: str):
         {**task, 'description': _format_filename(task['name'], task['file_amount'])}
         for task in cursor.fetchall()
     ]
-    cursor.close()
     return result
 
 
@@ -73,8 +69,6 @@ def find_latest_unconverted_file_list(limit: int):
         'WHERE id = ?',
         [(file['id'], ) for file in result]
     )
-    connection.commit()
-    cursor.close()
     return result
 
 
@@ -85,8 +79,6 @@ def update_file_status_by_file_id(file_id: int, status: int):
         'WHERE id = ?',
         (status, file_id)
     )
-    connection.commit()
-    cursor.close()
 
 
 def find_latest_uncompressed_task_list(limit):
@@ -105,8 +97,6 @@ def find_latest_uncompressed_task_list(limit):
         'WHERE task_id = ?',
         [(file['task_id'],) for file in result]
     )
-    connection.commit()
-    cursor.close()
     return result
 
 
@@ -117,8 +107,6 @@ def update_file_status_by_task_id(task_id: str, status: int):
         'WHERE task_id = ?',
         (status, task_id)
     )
-    connection.commit()
-    cursor.close()
 
 
 def _format_filename(filename, file_num):
@@ -151,7 +139,6 @@ def find_task_status_by_task_id(task_id: str, user_id: str):
         (task_id, user_id)
     )
     result = cursor.fetchone()
-    cursor.close()
     return result['task_status'] if result else None
 
 
@@ -163,7 +150,6 @@ def find_task_node_by_task_id(task_id: str):
         (task_id,)
     )
     result = cursor.fetchone()
-    cursor.close()
     return result['node'] if result else None
 
 
