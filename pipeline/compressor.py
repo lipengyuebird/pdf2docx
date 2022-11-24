@@ -38,11 +38,24 @@ def maintain_task_queue():
 
 if __name__ == '__main__':
     threading.Thread(target=maintain_task_queue).start()
+    flag = False
     while True:
         print(task_queue)
         if not task_queue:
+            if flag:
+                with open('time2.txt', 'a') as f:
+                    f.write('END\n')
+                    f.write(str(time.time()))
+                    f.write('\n')
+                flag = False
             time.sleep(10)
             continue
+        if not flag:
+            with open('time2.txt', 'a') as f:
+                f.write('START\n')
+                f.write(str(time.time()))
+                f.write('\n')
+            flag = True
         task_queue_lock.acquire(blocking=True)
         task = task_queue.pop()
         task_queue_lock.release()

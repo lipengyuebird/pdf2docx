@@ -49,12 +49,25 @@ def maintain_file_queue():
 
 if __name__ == '__main__':
     threading.Thread(target=maintain_file_queue).start()
+    flag = False
     while True:
         if not file_queue:
+            if flag:
+                with open('time1.txt', 'a') as f:
+                    f.write('END\n')
+                    f.write(str(time.time()))
+                    f.write('\n')
+                flag = False
             time.sleep(10)
             continue
 
-        print(file_queue)
+        if not flag:
+            with open('time1.txt', 'a') as f:
+                f.write('START\n')
+                f.write(str(time.time()))
+                f.write('\n')
+            flag = True
+
         try:
             file_queue_lock.acquire(blocking=True)
             print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
