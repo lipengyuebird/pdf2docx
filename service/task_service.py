@@ -35,8 +35,8 @@ def create_a_task(
     if len(file_list):
         cursor.executemany(
             'INSERT INTO file (task_id, name, user_id, output_format, time, status, '
-            '                  consumed_by_converter, consumed_by_compressor, ) '
-            'VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            '                  consumed_by_converter, consumed_by_compressor, node) '
+            'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
             [(task_id, file.filename, user_id, output_format, task_time, int(Status.TO_BE_CONVERTED),
               False, False) for file in file_list]
         )
