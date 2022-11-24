@@ -4,12 +4,14 @@
 # @Author   : Perye(Li Pengyu)
 # @FileName : hash_ring.py
 # @Software : PyCharm
+import sys
+sys.path.append("../")
+
 from __future__ import print_function
 
 from uhashring import HashRing
 
-import sys
-sys.path.append("../")
+
 from pysyncobj import SyncObj, SyncObjConf, replicated
 
 

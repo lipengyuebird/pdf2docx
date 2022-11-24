@@ -4,8 +4,10 @@
 # @Author   : Perye(Li Pengyu)
 # @FileName : task_service.py
 # @Software : PyCharm
-import os
 import sys
+sys.path.append("../")
+
+import os
 from datetime import datetime
 import pyrqlite.dbapi2 as dbapi2
 
@@ -13,7 +15,6 @@ from werkzeug.datastructures import ImmutableMultiDict, FileStorage
 
 from constant import PDF_DIR, DB_HOST, Status
 from db_support import dict_factory
-sys.path.append('/usr/local/pdf2docx')
 
 
 def create_a_task(
