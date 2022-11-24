@@ -55,7 +55,7 @@ def upload_file():
             if 'redirected' not in request.args.keys():
                 return redirect(
                     'http://' + ip_dict.get(hash_ring.get_node(task_id)) +
-                    f'/upload?task_id={task_id}&output_format={request.args.get("output_format")}'
+                    f'/upload?task_id={task_id}&output_format={request.args.get("output_format")}&redirected=1'
                 ), 307
         except ValueError:
             return {'message': 'Invalid task ID.'}, 400
