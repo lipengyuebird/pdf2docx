@@ -16,8 +16,7 @@ for filename in os.listdir('samples'):
     f_list.append(('file', (filename, f, "multipart/form-data")))
 
 task_id = requests.get('http://127.0.0.1:5001/task_id').text
-print(task_id)
-# r = requests.post('http://127.0.0.1:5000/upload', files=f_list, params={'output_format': 'docx'})
+r = requests.post('http://127.0.0.1:5001/upload', files=f_list, params={'output_format': 'docx', 'task_id': task_id})
 # print(r.text)
 # print(r.headers)
 #

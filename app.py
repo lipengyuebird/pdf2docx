@@ -53,7 +53,7 @@ def upload_file():
         try:
             task_id = str(uuid.UUID(request.args.get('task_id')))
             if hash_ring.get_node(task_id) != socket.gethostname():
-                return redirect(ip_dict.get(hash_ring.get_node(task_id))), 302
+                return redirect('http://' + ip_dict.get(hash_ring.get_node(task_id)) + '/upload'), 307
         except ValueError:
             return {'message': 'Invalid task ID.'}, 400
         token = request.headers.get('Authorization', None)
