@@ -42,6 +42,7 @@ def create_a_task(
             [(task_id, file.filename, user_id, output_format, task_time, int(Status.TO_BE_CONVERTED),
               False, False, ip_dict[socket.gethostname()]) for file in file_list]
         )
+    cursor.close()
     return task_id
 
 
@@ -56,6 +57,7 @@ def find_task_list_by_user_id(user_id: str):
         {**task, 'description': _format_filename(task['name'], task['file_amount'])}
         for task in cursor.fetchall()
     ]
+    cursor.close()
     return result
 
 
@@ -73,6 +75,7 @@ def find_latest_unconverted_file_list(limit: int):
             'WHERE id = ?',
             [(file['id'], ) for file in result]
         )
+    cursor.close()
     return result
 
 
@@ -83,6 +86,7 @@ def update_file_status_by_file_id(file_id: int, status: int):
         'WHERE id = ?',
         (int(status), file_id)
     )
+    cursor.close()
 
 
 def find_latest_uncompressed_task_list(limit):
@@ -102,6 +106,7 @@ def find_latest_uncompressed_task_list(limit):
             'WHERE task_id = ?',
             [(file['task_id'],) for file in result]
         )
+    cursor.close()
     return result
 
 
@@ -112,6 +117,7 @@ def update_file_status_by_task_id(task_id: str, status: int):
         'WHERE task_id = ?',
         (int(status), task_id)
     )
+    cursor.close()
 
 
 def _format_filename(filename, file_num):
@@ -144,6 +150,7 @@ def find_task_status_by_task_id(task_id: str, user_id: str):
         (task_id, user_id)
     )
     result = cursor.fetchone()
+    cursor.close()
     return result['task_status'] if result else None
 
 
@@ -155,6 +162,7 @@ def find_task_node_by_task_id(task_id: str):
         (task_id,)
     )
     result = cursor.fetchone()
+    cursor.close()
     return result['node'] if result else None
 
 
