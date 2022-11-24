@@ -32,13 +32,14 @@ def create_a_task(
     print(file_list)
     for file in file_list:
         file.save(f'{PDF_DIR}/{task_id}/{file.filename}')
-    cursor.executemany(
-        'INSERT INTO file (task_id, name, user_id, output_format, time, status, '
-        '                  consumed_by_converter, consumed_by_compressor, ) '
-        'VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [(task_id, file.filename, user_id, output_format, task_time, int(Status.TO_BE_CONVERTED),
-          False, False) for file in file_list]
-    )
+    if len(file_list):
+        cursor.executemany(
+            'INSERT INTO file (task_id, name, user_id, output_format, time, status, '
+            '                  consumed_by_converter, consumed_by_compressor, ) '
+            'VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [(task_id, file.filename, user_id, output_format, task_time, int(Status.TO_BE_CONVERTED),
+              False, False) for file in file_list]
+        )
     return task_id
 
 
@@ -64,11 +65,12 @@ def find_latest_unconverted_file_list(limit: int):
         (int(Status.TO_BE_CONVERTED), limit)
     )
     result = cursor.fetchall()
-    cursor.executemany(
-        'UPDATE file SET consumed_by_converter = true '
-        'WHERE id = ?',
-        [(file['id'], ) for file in result]
-    )
+    if len(result):
+        cursor.executemany(
+            'UPDATE file SET consumed_by_converter = true '
+            'WHERE id = ?',
+            [(file['id'], ) for file in result]
+        )
     return result
 
 
