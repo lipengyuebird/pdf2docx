@@ -27,6 +27,7 @@ for i in range(11):
             pass
     print(f_list)
     f_list = []
+    time.sleep(20)
 
 
 task_id = requests.get('http://127.0.0.1:5001/task_id').text
