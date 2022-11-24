@@ -50,4 +50,5 @@ if __name__ == '__main__':
             compress(task.get('task_id'))
             task_service.update_file_status_by_task_id(task.get('task_id'), int(Status.CONVERTED))
         except:
-            task_service.update_file_status_by_task_id(task.get('task_id'), int(Status.FAILED))
+            pass
+            # task_service.update_file_status_by_task_id(task.get('task_id'), int(Status.FAILED))
