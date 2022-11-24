@@ -64,7 +64,7 @@ def find_latest_unconverted_file_list(limit: int):
     cursor.execute(
         'SELECT * FROM file '
         'WHERE status = ? and consumed_by_converter = false and node = ? ORDER BY time DESC LIMIT ?',
-        (int(Status.TO_BE_CONVERTED), limit, ip_dict[socket.gethostname()])
+        (int(Status.TO_BE_CONVERTED), ip_dict[socket.gethostname()], limit)
     )
     result = cursor.fetchall()
     if len(result):
@@ -93,7 +93,7 @@ def find_latest_uncompressed_task_list(limit):
         '   FROM file '
         '   WHERE status != ? and consumed_by_compressor = false and node = ? GROUP BY task_id ORDER BY time DESC'
         ') WHERE min_status = 2 LIMIT ?',
-        (int(Status.FAILED), limit, ip_dict[socket.gethostname()])
+        (int(Status.FAILED), ip_dict[socket.gethostname()], limit)
     )
     result = cursor.fetchall()
     if len(result):
