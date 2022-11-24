@@ -39,7 +39,7 @@ def hello_world():
 
 @app.route('/task_id')
 def get_task_id():
-    return uuid.uuid4()
+    return str(uuid.uuid4())
 
 
 @app.route('/allowed_output_format', methods=['GET'])
