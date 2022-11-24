@@ -18,6 +18,7 @@ from constant import PDF_DIR, DB_HOST, Status, ip_dict
 from db_support import dict_factory
 
 connection = dbapi2.connect(host=DB_HOST)
+connection.row_factory = dict_factory
 
 
 def create_a_task(
