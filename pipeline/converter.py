@@ -68,16 +68,12 @@ if __name__ == '__main__':
                 f.write('\n')
             flag = True
 
+        file_queue_lock.acquire(blocking=True)
+        file = file_queue.pop()
+        file_queue_lock.release()
         try:
-            file_queue_lock.acquire(blocking=True)
-            print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-            file = file_queue.pop()
-            print(file_queue)
-            file_queue_lock.release()
             trans(file.get('task_id'), file.get('name'), file.get('output_format'))
             task_service.update_file_status_by_file_id(file.get('id'), int(Status.TO_BE_COMPRESSED))
         except:
-            if file_queue_lock.locked():
-                file_queue_lock.release()
             traceback.print_exc()
-            # task_service.update_file_status_by_file_id(file.get('id'), int(Status.FAILED))
+            task_service.update_file_status_by_file_id(file.get('id'), int(Status.FAILED))
