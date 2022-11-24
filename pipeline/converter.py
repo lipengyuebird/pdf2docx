@@ -4,6 +4,9 @@
 # @Author   : Perye(Li Pengyu)
 # @FileName : converter.py
 # @Software : PyCharm
+import sys
+sys.path.append('/usr/local/pdf2docx')
+
 import os.path
 import threading
 import time

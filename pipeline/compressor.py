@@ -4,6 +4,8 @@
 # @Author   : Perye(Li Pengyu)
 # @FileName : compressor.py
 # @Software : PyCharm
+import sys
+sys.path.append('/usr/local/pdf2docx')
 
 import threading
 import shutil
