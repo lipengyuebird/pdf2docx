@@ -158,5 +158,11 @@ def find_task_node_by_task_id(task_id: str):
 
 
 if __name__ == '__main__':
+    cursor = connection.cursor()
+    cursor.execute(
+        'SELECT * FROM file',
+    )
+    result = cursor.fetchall()
+    print(result)
     print(find_latest_unconverted_file_list(5))
     print(find_latest_uncompressed_task_list(5))
