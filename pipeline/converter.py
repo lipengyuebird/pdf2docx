@@ -41,7 +41,7 @@ def maintain_file_queue():
             time.sleep(5)
             continue
         try:
-            file_queue_lock.acquire(blocking=False, timeout=10)
+            file_queue_lock.acquire(blocking=True)
             file_queue.extend(task_service.find_latest_unconverted_file_list(20))
         except:
             traceback.print_exc()
@@ -71,7 +71,7 @@ if __name__ == '__main__':
                 f.write('\n')
             flag = True
 
-        file_queue_lock.acquire(blocking=False, timeout=10)
+        file_queue_lock.acquire(blocking=True)
         file = file_queue.pop()
         file_queue_lock.release()
         try:
