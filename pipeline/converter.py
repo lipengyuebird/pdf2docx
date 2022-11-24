@@ -36,13 +36,13 @@ def trans(task_id: str, filename: str, output_format: str):
 
 def maintain_file_queue():
     while True:
+        print(file_queue)
         if len(file_queue) >= 10:
             time.sleep(5)
             continue
-        print(file_queue)
         try:
-            file_queue_lock.acquire(blocking=True)
-            file_queue.extend(task_service.find_latest_unconverted_file_list(5))
+            file_queue_lock.acquire(blocking=False, timeout=10)
+            file_queue.extend(task_service.find_latest_unconverted_file_list(20))
         except:
             traceback.print_exc()
         finally:
@@ -71,7 +71,7 @@ if __name__ == '__main__':
                 f.write('\n')
             flag = True
 
-        file_queue_lock.acquire(blocking=True)
+        file_queue_lock.acquire(blocking=False, timeout=10)
         file = file_queue.pop()
         file_queue_lock.release()
         try:

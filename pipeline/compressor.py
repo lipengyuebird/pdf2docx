@@ -29,8 +29,8 @@ def maintain_task_queue():
             time.sleep(5)
             continue
         try:
-            task_queue_lock.acquire(blocking=True)
-            task_queue.extend(task_service.find_latest_uncompressed_task_list(5))
+            task_queue_lock.acquire(blocking=False, timeout=10)
+            task_queue.extend(task_service.find_latest_uncompressed_task_list(20))
             print(task_queue)
         except:
             traceback.print_exc()
@@ -59,7 +59,7 @@ if __name__ == '__main__':
                 f.write(str(time.time()))
                 f.write('\n')
             flag = True
-        task_queue_lock.acquire(blocking=True)
+        task_queue_lock.acquire(blocking=False, timeout=10)
         task = task_queue.pop()
         task_queue_lock.release()
         try:
