@@ -92,11 +92,12 @@ def find_latest_uncompressed_task_list(limit):
         (int(Status.FAILED), limit)
     )
     result = cursor.fetchall()
-    cursor.executemany(
-        'UPDATE file SET consumed_by_compressor = true '
-        'WHERE task_id = ?',
-        [(file['task_id'],) for file in result]
-    )
+    if len(result):
+        cursor.executemany(
+            'UPDATE file SET consumed_by_compressor = true '
+            'WHERE task_id = ?',
+            [(file['task_id'],) for file in result]
+        )
     return result
 
 
