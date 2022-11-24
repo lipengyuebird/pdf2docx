@@ -79,7 +79,7 @@ def find_latest_unconverted_file_list(limit: int):
 def update_file_status_by_file_id(file_id: int, status: int):
     cursor = connection.cursor()
     cursor.execute(
-        'UPDATE file SET status = ?'
+        'UPDATE file SET status = ? '
         'WHERE id = ?',
         (int(status), file_id)
     )
@@ -108,7 +108,7 @@ def find_latest_uncompressed_task_list(limit):
 def update_file_status_by_task_id(task_id: str, status: int):
     cursor = connection.cursor()
     cursor.execute(
-        'UPDATE file SET status = ?'
+        'UPDATE file SET status = ? '
         'WHERE task_id = ?',
         (int(status), task_id)
     )
