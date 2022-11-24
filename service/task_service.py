@@ -36,7 +36,7 @@ def create_a_task(
         'INSERT INTO file (task_id, name, user_id, output_format, time, status, '
         '                  consumed_by_converter, consumed_by_compressor, ) '
         'VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [(task_id, file.filename, user_id, output_format, task_time, Status.TO_BE_CONVERTED,
+        [(task_id, file.filename, user_id, output_format, task_time, int(Status.TO_BE_CONVERTED),
           False, False) for file in file_list]
     )
     return task_id
@@ -61,7 +61,7 @@ def find_latest_unconverted_file_list(limit: int):
     cursor.execute(
         'SELECT * FROM file '
         'WHERE status = ? and consumed_by_converter = false ORDER BY time DESC LIMIT ?',
-        (Status.TO_BE_CONVERTED, limit)
+        (int(Status.TO_BE_CONVERTED), limit)
     )
     result = cursor.fetchall()
     cursor.executemany(
@@ -89,7 +89,7 @@ def find_latest_uncompressed_task_list(limit):
         '   FROM file '
         '   WHERE status != ? and consumed_by_compressor = false GROUP BY task_id ORDER BY time DESC'
         ') WHERE min_status = 2 LIMIT ?',
-        (Status.FAILED, limit)
+        (int(Status.FAILED), limit)
     )
     result = cursor.fetchall()
     cursor.executemany(
@@ -123,10 +123,10 @@ def _format_filename(filename, file_num):
 
 
 def _get_task_status(min_file_status: int, max_file_status: int):
-    if min_file_status == Status.CONVERTED:
-        return Status.CONVERTED
-    elif max_file_status == Status.FAILED:
-        return Status.FAILED
+    if min_file_status == int(Status.CONVERTED):
+        return int(Status.CONVERTED)
+    elif max_file_status == int(Status.FAILED):
+        return int(Status.FAILED)
     else:
         return max_file_status
 
