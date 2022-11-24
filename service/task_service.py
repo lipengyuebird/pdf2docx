@@ -80,7 +80,7 @@ def update_file_status_by_file_id(file_id: int, status: int):
     cursor.execute(
         'UPDATE file SET status = ?'
         'WHERE id = ?',
-        (status, file_id)
+        (int(status), file_id)
     )
 
 
@@ -109,7 +109,7 @@ def update_file_status_by_task_id(task_id: str, status: int):
     cursor.execute(
         'UPDATE file SET status = ?'
         'WHERE task_id = ?',
-        (status, task_id)
+        (int(status), task_id)
     )
 
 
