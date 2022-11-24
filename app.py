@@ -52,7 +52,7 @@ def upload_file():
     if request.method == 'POST':
         try:
             task_id = str(uuid.UUID(request.args.get('task_id')))
-            if hash_ring.get_node(task_id) != socket.gethostname():
+            if 'redirected' not in request.args.keys():
                 return redirect(
                     'http://' + ip_dict.get(hash_ring.get_node(task_id)) +
                     f'/upload?task_id={task_id}&output_format={request.args.get("output_format")}'
