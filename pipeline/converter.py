@@ -60,7 +60,7 @@ if __name__ == '__main__':
         file_queue_lock.release()
         try:
             trans(file.get('task_id'), file.get('name'), file.get('output_format'))
-            task_service.update_file_status_by_file_id(file.get('id'), Status.TO_BE_COMPRESSED)
+            task_service.update_file_status_by_file_id(file.get('id'), int(Status.TO_BE_COMPRESSED))
         except:
             traceback.print_exc()
-            task_service.update_file_status_by_file_id(file.get('id'), Status.FAILED)
+            task_service.update_file_status_by_file_id(file.get('id'), int(Status.FAILED))

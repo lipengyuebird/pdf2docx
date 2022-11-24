@@ -48,6 +48,6 @@ if __name__ == '__main__':
         task_queue_lock.release()
         try:
             compress(task.get('task_id'))
-            task_service.update_file_status_by_task_id(task.get('task_id'), Status.CONVERTED)
+            task_service.update_file_status_by_task_id(task.get('task_id'), int(Status.CONVERTED))
         except:
-            task_service.update_file_status_by_task_id(task.get('task_id'), Status.FAILED)
+            task_service.update_file_status_by_task_id(task.get('task_id'), int(Status.FAILED))
