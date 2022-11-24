@@ -164,6 +164,9 @@ if __name__ == '__main__':
         'SELECT * FROM file',
     )
     result = cursor.fetchall()
-    print(result)
+    for r in result:
+        print(r)
+        print(r.get('node'))
+
     print(find_latest_unconverted_file_list(5))
     print(find_latest_uncompressed_task_list(5))
