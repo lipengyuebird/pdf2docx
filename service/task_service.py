@@ -5,7 +5,7 @@
 # @FileName : task_service.py
 # @Software : PyCharm
 import sys
-sys.path.append("../")
+sys.path.append("/usr/local/pdf2docx")
 
 import os
 from datetime import datetime
